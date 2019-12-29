@@ -4,13 +4,11 @@ import { Link } from "@reach/router";
 interface NavProps {
     active: 'home' | 'upload'
     path: '/' | 'upload'
+    setWallet: (wallet: FileList | null) => void
+    getWallet: () => FileList
 };
 
-interface NavState {
-    wallet: FileList | null
-}
-
-class Nav extends React.Component <NavProps, NavState> {
+class Nav extends React.Component <NavProps, any> {
     constructor(props:NavProps) {
         super(props);
         this.state = {
@@ -19,11 +17,12 @@ class Nav extends React.Component <NavProps, NavState> {
         this.getName = this.getName.bind(this);
         this.handleWalletChange = this.handleWalletChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.getWallet = this.getWallet.bind(this);
     }
 
     getName() {
-        if (this.state.wallet) {
-            if (this.state.wallet[0]) {
+        if (this.props.getWallet()) {
+            if (this.props.getWallet()[0]) {
                 return 'Wallet Selected'
             }
         }
@@ -58,13 +57,15 @@ class Nav extends React.Component <NavProps, NavState> {
     }
 
     handleWalletChange(event:React.ChangeEvent<HTMLInputElement>) {
-        this.setState({
-            wallet: event.target.files
-        });
+        this.props.setWallet(event.target.files);
     }
 
     handleSubmit(event:React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+    }
+
+    getWallet() {
+        return this.state.wallet;
     }
 
     render() {

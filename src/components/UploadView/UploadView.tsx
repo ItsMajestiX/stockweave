@@ -1,10 +1,20 @@
 import React from "react";
+import Arweave from 'arweave/web';
+import uploadPhoto from "./arweavehandler";
+import { JWKInterface } from "arweave/web/lib/wallet";
 
 interface UploadViewProps {
     path: string
+    getWallet: () => FileList
 }
 
-interface UploadViewState {
+//https://stackoverflow.com/a/40718205/10720080
+function isJWK(pet: JWKInterface): pet is JWKInterface {
+    //Uncommon name
+    return pet.kty !== undefined
+}
+
+export interface UploadViewState {
     files: FileList | null
     adaptations: string | null
     commercial: boolean
@@ -91,6 +101,31 @@ class UploadView extends React.Component<UploadViewProps, UploadViewState> {
 
     handleSubmit(event:React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        let wallet = this.props.getWallet()
+        let reader = new FileReader()
+        if (!(wallet[0].type === "application/json")) {
+            alert("Your wallet is not a JSON file. Please try again.");
+        }
+        else {
+            let reader = new FileReader();
+        
+            reader.onload = (e) => {
+                let key = JSON.parse(e.target?.result as string);
+                if (isJWK(key)) {
+                    if (this.state.files) {
+                        reader.onload = async (e2) => {
+                            let success = await uploadPhoto(e2, this.state, key);
+                            if (success) {
+                                alert("Upload sucessful. You image will show on the site after mining is complete.")
+                            }
+                        }
+                        reader.readAsDataURL(this.state.files[0]);
+                    }
+                }
+            }
+
+            reader.readAsText(wallet[0]);
+        }
     }
 
     render() {
