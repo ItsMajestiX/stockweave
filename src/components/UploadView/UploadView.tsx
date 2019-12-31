@@ -16,7 +16,8 @@ function isJWK(pet: JWKInterface): pet is JWKInterface {
 
 export interface UploadViewState {
     files: FileList | null
-    adaptations: string | null
+    public: boolean
+    adaptations: 'y' | 'n' | 'sa' | ''
     commercial: boolean
     name: string
     desc: string
@@ -27,6 +28,7 @@ class UploadView extends React.Component<UploadViewProps, UploadViewState> {
         super(props);
         this.state = {
             files: null,
+            public: false,
             adaptations: "",
             commercial: false,
             name: '',
@@ -38,6 +40,7 @@ class UploadView extends React.Component<UploadViewProps, UploadViewState> {
         this.handleDescChange = this.handleDescChange.bind(this);
         this.handleAdaptationsChange = this.handleAdaptationsChange.bind(this);
         this.handleCommercialChange = this.handleCommercialChange.bind(this);
+        this.handlePDChange = this.handlePDChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -88,14 +91,40 @@ class UploadView extends React.Component<UploadViewProps, UploadViewState> {
     }
 
     handleAdaptationsChange(event:React.ChangeEvent<HTMLSelectElement>) {
-        this.setState({
-            adaptations: event.currentTarget.value
-        });
+        if (['y', 'n', 'sa', ''].includes(event.currentTarget.value)) {
+            this.setState({
+                adaptations: event.currentTarget.value as 'y' | 'n' | 'sa' | ''
+            });
+        }
     }
 
     handleCommercialChange(event:React.ChangeEvent<HTMLInputElement>) {
         this.setState({
             commercial: event.currentTarget.checked
+        });
+    }
+
+    handlePDChange(event:React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            public: event.target.checked
+        }, () => {
+            if (this.state.public) {
+                this.setState({
+                    adaptations: 'y',
+                    commercial: true
+                }, () => {
+                    let check = document.getElementById('commercialCheck') as HTMLInputElement;
+                    check.checked = true;
+                    check.disabled = true;
+                    let select = document.getElementById('adaptations') as HTMLSelectElement;
+                    select.value = 'y'
+                    select.disabled = true;
+                })
+            }
+            else {
+                (document.getElementById('commercialCheck') as HTMLInputElement).disabled = false;
+                (document.getElementById('adaptations') as HTMLSelectElement).disabled = false;
+            }
         });
     }
 
@@ -146,15 +175,21 @@ class UploadView extends React.Component<UploadViewProps, UploadViewState> {
                     <label htmlFor="desc">Description</label>
                     <textarea className="form-control" id="desc" onChange={this.handleDescChange} rows={3}></textarea>
                 </div>
-                <select className="custom-select" onChange={this.handleAdaptationsChange} required>
+                <div className="form-check pb-3">
+                    <input className="form-check-input" type="checkbox" value="" id="pdCheck" onChange={this.handlePDChange} />
+                    <label className="form-check-label" htmlFor="pdCheck">
+                        Public Domain?
+                    </label>
+                </div>
+                <select id='adaptations' className="custom-select" onChange={this.handleAdaptationsChange} required>
                     <option value="">Would you like adaptations?</option>
                     <option value="y">Yes</option>
                     <option value="n">No</option>
                     <option value="sa">Yes, but creator must share alike.</option>
                 </select>
                 <div className="form-check py-3">
-                    <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onChange={this.handleCommercialChange} />
-                    <label className="form-check-label" htmlFor="defaultCheck1">
+                    <input className="form-check-input" type="checkbox" value="" id="commercialCheck" onChange={this.handleCommercialChange} />
+                    <label className="form-check-label" htmlFor="commercialCheck">
                         Commercial Use?
                     </label>
                 </div>

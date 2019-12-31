@@ -1,4 +1,5 @@
 import React from "react";
+import Image from './Image/Image'
 
 interface ImageViewProps {
     path: string
@@ -7,7 +8,9 @@ interface ImageViewProps {
 class ImageView extends React.Component<ImageViewProps, any> {
     render() {
         return(
-            <span>foo</span>
+            <div className="p-3">
+                <Image />
+            </div>
         );
     }
 }
