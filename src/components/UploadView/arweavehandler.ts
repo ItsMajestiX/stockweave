@@ -10,6 +10,7 @@ export async function uploadPhoto(e: ProgressEvent<FileReader>, state: UploadVie
     });
     let payload = {
         file: e.target?.result,
+        public: state.public,
         adaptations: state.adaptations,
         commercial: state.commercial,
         name: state.name,
@@ -22,6 +23,9 @@ export async function uploadPhoto(e: ProgressEvent<FileReader>, state: UploadVie
     if (error || !transaction) {
         return false;
     }
+    transaction.addTag("User-Agent", "Stockweave/1.0.0");
+    transaction.addTag("Content-Type", "application/json")
+    transaction.addTag("type", "createPost");
     await arweave.transactions.sign(transaction, key).catch(() => { error = true; });
     if (error || !transaction) {
         return false;

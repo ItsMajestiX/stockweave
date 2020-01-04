@@ -1,6 +1,12 @@
 import React, { ReactNode, CSSProperties } from 'react';
 
 interface CCLicenseButtonProps {
+    public: boolean,
+    adaptations: 'y' | 'n' | 'sa' | '',
+    commercial: boolean
+}
+
+interface CCLicenseButtonState {
     public: boolean
     adaptations: '' | 'nd' | 'sa'
     commercial: 'nc' | ''
@@ -10,11 +16,16 @@ let borderStyle:CSSProperties = {
     borderWidth: 0
 }
 
-class CCLicenseButton extends React.Component<CCLicenseButtonProps, any> {
-    constructor(props: CCLicenseButtonProps) {
+class CCLicenseButton extends React.Component<CCLicenseButtonProps, CCLicenseButtonState> {
+    constructor(props: any) {
         super(props);
         this.getLicenseName = this.getLicenseName.bind(this);
         this.getLicenseElement = this.getLicenseElement.bind(this);
+        this.state = {
+            public: this.props.public,
+            commercial: !this.props.commercial ? 'nc': '',
+            adaptations: this.props.adaptations === 'y' ? '' : this.props.adaptations === 'n' ? 'nd' : 'sa'
+        }
     }
 
     getLicenseName() {
