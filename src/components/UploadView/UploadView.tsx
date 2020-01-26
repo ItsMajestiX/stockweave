@@ -132,28 +132,33 @@ class UploadView extends React.Component<UploadViewProps, UploadViewState> {
         event.preventDefault();
         let wallet = this.props.getWallet()
         let reader = new FileReader()
-        if (!(wallet[0].type === "application/json")) {
-            alert("Your wallet is not a JSON file. Please try again.");
+        if (!wallet) {
+            alert("No wallet selected.");
         }
         else {
-            let reader = new FileReader();
-        
-            reader.onload = (e) => {
-                let key = JSON.parse(e.target?.result as string);
-                if (isJWK(key)) {
-                    if (this.state.files) {
-                        reader.onload = async (e2) => {
-                            let success = await uploadPhoto(e2, this.state, key);
-                            if (success) {
-                                alert("Upload sucessful. You image will show on the site after mining is complete.")
+            if (!(wallet[0].type === "application/json")) {
+                alert("Your wallet is not a JSON file. Please try again.");
+            }
+            else {
+                let reader = new FileReader();
+            
+                reader.onload = (e) => {
+                    let key = JSON.parse(e.target?.result as string);
+                    if (isJWK(key)) {
+                        if (this.state.files) {
+                            reader.onload = async (e2) => {
+                                let success = await uploadPhoto(e2, this.state, key);
+                                if (success) {
+                                    alert("Upload sucessful. You image will show on the site after mining is complete.")
+                                }
                             }
+                            reader.readAsDataURL(this.state.files[0]);
                         }
-                        reader.readAsDataURL(this.state.files[0]);
                     }
                 }
+    
+                reader.readAsText(wallet[0]);
             }
-
-            reader.readAsText(wallet[0]);
         }
     }
 

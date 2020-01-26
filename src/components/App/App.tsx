@@ -36,7 +36,7 @@ class App extends React.Component<any, any> {
                     <Nav path='upload' active="upload" setWallet={this.setWallet} getWallet={this.getWallet} />
                 </Router>
                 <Router>
-                    <ImageView path='/' />
+                    <ImageView path='/' getWallet={this.getWallet} />
                     <UploadView path='upload' getWallet={this.getWallet} />
                 </Router>
             </div>
