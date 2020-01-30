@@ -1,6 +1,7 @@
 import React from 'react';
 import Nav from '../Nav/Nav';
-import { Router } from '@reach/router';
+import createHashSource from 'hash-source'
+import { Router, createHistory, HistorySource, LocationProvider } from '@reach/router';
 import UploadView from '../UploadView/UploadView';
 import ImageView from '../ImageView/ImageView';
 
@@ -29,17 +30,21 @@ class App extends React.Component<any, any> {
     }
 
     render() {
+        let source = createHashSource() as HistorySource
+        let history = createHistory(source)
         return (
-            <div>
-                <Router>
-                    <Nav path='/' active="home" setWallet={this.setWallet} getWallet={this.getWallet} />
-                    <Nav path='upload' active="upload" setWallet={this.setWallet} getWallet={this.getWallet} />
-                </Router>
-                <Router>
-                    <ImageView path='/' getWallet={this.getWallet} />
-                    <UploadView path='upload' getWallet={this.getWallet} />
-                </Router>
-            </div>
+            <LocationProvider history={history}>
+                <div>
+                    <Router>
+                        <Nav path='/' active="home" setWallet={this.setWallet} getWallet={this.getWallet} />
+                        <Nav path='upload' active="upload" setWallet={this.setWallet} getWallet={this.getWallet} />
+                    </Router>
+                    <Router>
+                        <ImageView path='/' getWallet={this.getWallet} />
+                        <UploadView path='upload' getWallet={this.getWallet} />
+                    </Router>
+                </div>
+            </LocationProvider>
         );
     }
 }
