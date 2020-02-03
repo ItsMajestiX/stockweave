@@ -99,7 +99,6 @@ class ImageView extends React.Component<ImageViewProps, ImageViewState> {
             }
         })
         .then((values) => {
-            console.log(this)
             this.setState({
                 loading: false,
                 imgs: values
@@ -108,8 +107,6 @@ class ImageView extends React.Component<ImageViewProps, ImageViewState> {
     }
 
     render() {
-        console.log("foo");
-        console.log(this);
         if (this.state.loading) {
             return(
                 <div className="p-3">
@@ -125,7 +122,7 @@ class ImageView extends React.Component<ImageViewProps, ImageViewState> {
             return(
                 <div className="p-3">
                     {this.state.imgs.map((img: string) => (
-                        <Image id={img} key={img} sendAR={this.sendAR} />
+                        <Image id={img} key={img} data_key={img} sendAR={this.sendAR} />
                     ))}
                 </div>
             );

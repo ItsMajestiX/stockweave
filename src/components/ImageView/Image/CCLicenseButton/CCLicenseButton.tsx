@@ -29,7 +29,7 @@ class CCLicenseButton extends React.Component<CCLicenseButtonProps, CCLicenseBut
     }
 
     getLicenseName() {
-        return ('by-' + this.props.commercial + '-' + this.props.adaptations).replace('--', '-').replace(/-$/, '');
+        return ('by-' + this.state.commercial + '-' + this.state.adaptations).replace('--', '-').replace(/-$/, '');
     }
 
     getLicenseElement(): ReactNode {

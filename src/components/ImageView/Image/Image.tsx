@@ -5,6 +5,7 @@ import getImageData from './arweavehandler';
 interface ImageProps  {
     id: string
     sendAR(to: string, amount: number): void
+    data_key: string
 }
 
 interface ImageState {
@@ -98,8 +99,8 @@ class Image extends React.Component<ImageProps, ImageState> {
                         {this.getUserName()}
                         <p className="card-text">{this.state.desc}</p>
                         <form className='form-inline' onSubmit={this.handleSubmit}>
-                            <label className='sr-only' htmlFor='arInput'>Dontate AR</label>
-                            <input type="number" className="form-control" id="arInput" placeholder='1' min="0.01" step={0.01} onChange={this.handleValueChange}></input>
+                            <label className='sr-only' htmlFor={"arInput" + this.props.data_key}>Dontate AR</label>
+                            <input type="number" className="form-control" id={"arInput" + this.props.data_key} placeholder='1' min="0.01" step={0.01} onChange={this.handleValueChange}></input>
                             <button type="submit" className="btn btn-primary m-2">Donate AR</button>
                         </form>
                         <CCLicenseButton public={this.state.public} adaptations={this.state.adaptations} commercial={this.state.commercial} />
