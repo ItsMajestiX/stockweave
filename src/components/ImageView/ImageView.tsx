@@ -120,10 +120,10 @@ class ImageView extends React.Component<ImageViewProps, ImageViewState> {
         }
         else {
             return(
-                <div className="p-3">
-                    {this.state.imgs.map((img: string) => (
-                        <Image id={img} key={img} data_key={img} sendAR={this.sendAR} />
-                    ))}
+                <div className="container-fluid row">
+                        {this.state.imgs.map((img: string) => (
+                            <Image id={img} key={img} data_key={img} sendAR={this.sendAR} />
+                        ))}
                 </div>
             );
         }

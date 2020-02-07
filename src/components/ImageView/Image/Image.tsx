@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import CCLicenseButton from './CCLicenseButton/CCLicenseButton';
 import getImageData from './arweavehandler';
 
@@ -19,6 +19,12 @@ interface ImageState {
     loading: boolean
     userName: string | null
     arValue: number
+    rem: number
+}
+
+interface HeightWidth {
+    h: number
+    w: number
 }
 
 class Image extends React.Component<ImageProps, ImageState> {
@@ -34,11 +40,13 @@ class Image extends React.Component<ImageProps, ImageState> {
             author: '',
             loading: true,
             userName: null,
-            arValue: 0
+            arValue: 0,
+            rem: 0
         }
         this.getUserName = this.getUserName.bind(this);
         this.handleValueChange = this.handleValueChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.updateWidth = this.updateWidth.bind(this);
     }
 
     handleValueChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -62,6 +70,9 @@ class Image extends React.Component<ImageProps, ImageState> {
     }
     
     componentDidMount() {
+        window.addEventListener('resize', () => {
+            this.updateWidth();
+        })
         getImageData(this.props.id)
         .then((data) => {
             this.setState({
@@ -74,14 +85,35 @@ class Image extends React.Component<ImageProps, ImageState> {
                 desc: data.desc,
                 userName: data.userName as string,
                 loading: false
+            }, () => {
+                this.updateWidth();
             });
         })
+    }
+
+    //https://stackoverflow.com/a/49159728/10720080
+    getImageDimensions(file: string) {
+        return new Promise<HeightWidth>(function (resolved, rejected) {
+            let i = new window.Image()
+            i.onload = function(){
+              resolved({w: i.width, h: i.height})
+            };
+            i.src = file
+        })
+    }
+
+    updateWidth() {
+        this.getImageDimensions(this.state.dataUrl).then((data) => {
+            this.setState({
+                rem: Math.min(data.w / 16, window.innerWidth / 48 - 3)
+            });
+        });
     }
 
     render() {
         if (this.state.loading) {
             return(
-                <div className="card border-primary mb-3 p-1">
+                <div className="card border-primary mb-3 p-1 col-sm-auto">
                     <div className="d-flex justify-content-center">
                         <div className="spinner-border" role="status">
                             <span className="sr-only">Loading...</span>
@@ -92,13 +124,13 @@ class Image extends React.Component<ImageProps, ImageState> {
         }
         else {
             return (
-                <div className="card border-primary mb-3 p-1">
-                    <img src={this.state.dataUrl} className="card-img-top" alt="image" />
+                <div className="card border-primary m-3 p-1 col-sm-auto" style={{width: this.state.rem + 'rem'} as CSSProperties}>
+                    <img alt="Card image cap" className="card-img-top img-fluid" src={this.state.dataUrl} />
                     <div className="card-body">
                         <h5 className="card-title">{this.state.name}</h5>
                         {this.getUserName()}
                         <p className="card-text">{this.state.desc}</p>
-                        <form className='form-inline' onSubmit={this.handleSubmit}>
+                        <form className='form-group' onSubmit={this.handleSubmit}>
                             <label className='sr-only' htmlFor={"arInput" + this.props.data_key}>Dontate AR</label>
                             <input type="number" className="form-control" id={"arInput" + this.props.data_key} placeholder='1' min="0.01" step={0.01} onChange={this.handleValueChange}></input>
                             <button type="submit" className="btn btn-primary m-2">Donate AR</button>
